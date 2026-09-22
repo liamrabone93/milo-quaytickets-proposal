@@ -182,6 +182,19 @@ h1 em{font-style:normal;color:var(--yellow)}
 .vid-meta{font-size:.72rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--grey);white-space:nowrap;flex-shrink:0}
 .vid-frame{position:relative;aspect-ratio:16/9;overflow:hidden;background:var(--ink);border:3px solid var(--ink);box-shadow:12px 12px 0 var(--yellow)}
 .vid-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+/* designed click-to-play poster: the Vimeo auto-thumbnail is pure black */
+.vid-poster{position:absolute;inset:0;width:100%;height:100%;border:0;padding:0;cursor:pointer;background:var(--ink);display:block;text-align:left;font-family:inherit;overflow:hidden}
+.vp-bg{position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.14) 1px,transparent 1px);background-size:26px 26px;-webkit-mask-image:radial-gradient(ellipse 72% 70% at 28% 50%,#000 0%,transparent 76%);mask-image:radial-gradient(ellipse 72% 70% at 28% 50%,#000 0%,transparent 76%)}
+.vp-glow{position:absolute;right:-12%;top:-30%;width:62%;height:160%;background:radial-gradient(circle at 50% 50%,rgba(131,64,221,.5),rgba(78,155,248,.18) 45%,transparent 68%);pointer-events:none}
+.vp-inner{position:absolute;left:clamp(22px,4.4%,54px);top:50%;transform:translateY(-50%);max-width:60%;z-index:2}
+.vp-mark{display:block;font-family:'Baloo 2',sans-serif;font-size:clamp(1.5rem,3vw,2.1rem);font-weight:800;line-height:1;letter-spacing:-.02em;background:linear-gradient(96deg,var(--milo-a),var(--milo-b));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:14px}
+.vp-title{display:block;font-family:'Archivo',sans-serif;font-variation-settings:'wdth' 78,'wght' 800;text-transform:uppercase;color:#fff;font-size:clamp(1.15rem,3vw,2.3rem);line-height:.98;letter-spacing:-.015em}
+.vp-sub{display:block;margin-top:14px;font-size:clamp(.78rem,1.1vw,.92rem);color:rgba(255,255,255,.6);font-weight:500;max-width:34ch;line-height:1.45}
+.vp-play{position:absolute;right:clamp(24px,7%,86px);top:50%;transform:translateY(-50%);width:clamp(58px,8vw,88px);height:clamp(58px,8vw,88px);background:var(--yellow);display:flex;align-items:center;justify-content:center;z-index:2;transition:transform .28s var(--ease)}
+.vid-poster:hover .vp-play{transform:translateY(-50%) scale(1.08)}
+.vp-play svg{margin-left:5px}
+.vp-dur{position:absolute;right:clamp(22px,4.4%,54px);bottom:clamp(18px,3.4%,30px);font-size:.7rem;font-weight:700;letter-spacing:.14em;color:rgba(255,255,255,.55);z-index:2}
+@media(max-width:560px){.vp-inner{max-width:100%;right:clamp(22px,4.4%,54px)}.vp-play{position:static;transform:none;margin-top:20px}.vid-poster:hover .vp-play{transform:scale(1.06)}.vp-inner{top:auto;bottom:46px;transform:none}}
 @media(max-width:640px){.vid-frame{box-shadow:7px 7px 0 var(--yellow)}}
 
 /* ── Use cases ──────────────────────────────────────────── */
@@ -490,12 +503,21 @@ footer{background:var(--ink);color:#fff;padding:52px 0 44px;border-top:3px solid
       <div class="vid-head">
         <div class="vh-l">
           <h3>What Milo actually is.</h3>
-          <span class="vid-meta">Ninety seconds</span>
         </div>
-        <span class="vid-meta">1:29</span>
+        <span class="vid-meta">Click to play</span>
       </div>
-      <div class="vid-frame">
-        <iframe src="https://player.vimeo.com/video/1196983997?title=0&amp;byline=0&amp;portrait=0&amp;dnt=1" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen loading="lazy" title="Milo overview"></iframe>
+      <div class="vid-frame" id="vidframe">
+        <button class="vid-poster" id="vidposter" type="button" aria-label="Play the Milo overview video, one minute twenty-nine">
+          <span class="vp-bg"></span>
+          <span class="vp-glow"></span>
+          <span class="vp-inner">
+            <span class="vp-mark">Milo</span>
+            <span class="vp-title">The whole thing,<br/>in ninety seconds</span>
+            <span class="vp-sub">No setup, no slides. What it is and what it does with your data.</span>
+          </span>
+          <span class="vp-play"><svg width="26" height="30" viewBox="0 0 26 30" fill="none" aria-hidden="true"><path d="M25 15L0.25 29.29V0.71L25 15Z" fill="#000"/></svg></span>
+          <span class="vp-dur">1:29</span>
+        </button>
       </div>
     </div>
     <div class="grid g4 reveal d1" style="border-top:3px solid var(--ink)">
@@ -897,6 +919,15 @@ footer{background:var(--ink);color:#fff;padding:52px 0 44px;border-top:3px solid
     es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target)}});
   },{threshold:.12,rootMargin:'0px 0px -8% 0px'});
   document.querySelectorAll('.reveal').forEach(e=>io.observe(e));
+})();
+
+/* ═══ Explainer video: load the player only when asked ═══ */
+(function(){
+  const p=document.getElementById('vidposter'),f=document.getElementById('vidframe');
+  if(!p||!f)return;
+  p.addEventListener('click',()=>{
+    f.innerHTML='<iframe src="https://player.vimeo.com/video/1196983997?autoplay=1&title=0&byline=0&portrait=0&dnt=1" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="Milo overview"></iframe>';
+  });
 })();
 
 /* ═══ Demo ═══
